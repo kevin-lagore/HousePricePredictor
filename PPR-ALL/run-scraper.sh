@@ -1,18 +1,33 @@
 #!/bin/bash
-# Run the MyHome.ie scraper in a tmux session
+# Run the MyHome.ie brochure scraper in a tmux session
 # This allows you to disconnect from SSH and the scraper keeps running
 #
 # Usage:
-#   ./run-scraper.sh                    # Scrape price register (sold properties)
-#   ./run-scraper.sh --for-sale         # Scrape for-sale listings
+#   ./run-scraper.sh                    # Scrape brochures (bulk mode)
 #   ./run-scraper.sh --county dublin    # Filter by county
+#   ./run-scraper.sh --limit 1000       # Limit number of listings
+#
+# NOTE: Uses scrape_myhome_brochures.py which gets FULL property data
+# (beds, baths, size, BER, description) from brochure pages that persist
+# even after properties are sold.
 
 set -e
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
-source venv/bin/activate
+
+# Create venv if it doesn't exist
+if [ ! -d "venv" ]; then
+    echo "Creating virtual environment..."
+    python3 -m venv venv
+    source venv/bin/activate
+    echo "Installing dependencies..."
+    pip install playwright
+    playwright install firefox
+else
+    source venv/bin/activate
+fi
 
 SESSION_NAME="scraper"
 OUTPUT_DIR="output"
@@ -21,15 +36,10 @@ TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
 
-# Default output file based on mode
-if [[ "$*" == *"--for-sale"* ]]; then
-    OUTPUT_FILE="$OUTPUT_DIR/myhome_forsale_$TIMESTAMP.csv"
-else
-    OUTPUT_FILE="$OUTPUT_DIR/myhome_sold_$TIMESTAMP.csv"
-fi
+OUTPUT_FILE="$OUTPUT_DIR/myhome_brochures_$TIMESTAMP.csv"
 
-# Build command
-CMD="python scrape_myhome.py --out $OUTPUT_FILE $@"
+# Build command - use brochure scraper in bulk mode
+CMD="python scrape_myhome_brochures.py --bulk --out $OUTPUT_FILE $@"
 
 echo "=========================================="
 echo "MyHome.ie Scraper"
