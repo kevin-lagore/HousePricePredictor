@@ -1,0 +1,2 @@
+# Requirements for MyHome.ie scraper
+playwright>=1.40.0

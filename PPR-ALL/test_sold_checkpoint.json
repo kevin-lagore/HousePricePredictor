@@ -1,0 +1,17 @@
+{
+  "last_page": 1,
+  "last_listing_url": "https://www.daft.ie/sold/64-carysfort-park-blackrock-co-dublin-dublin/FA4A419751CF75EB80258D7100602606",
+  "processed_count": 5,
+  "processed_urls": [
+    "https://www.daft.ie/sold/64-carysfort-park-blackrock-co-dublin-dublin/FA4A419751CF75EB80258D7100602606",
+    "https://www.daft.ie/sold/47-ravenswood-carrick-on-suir-tipperary-tipperary/7A72D9F1042DFEA780258D6A00602ED8",
+    "https://www.daft.ie/sold/88-carrigweir-weir-rd-tuam-galway/EB3161BA3910287080258D710060257D",
+    "https://www.daft.ie/sold/21a-lea-road-dublin-4-dublin-4-dublin/AD6FE6107388C81880258D71006026E2",
+    "https://www.daft.ie/sold/auckland-trusky-west-barna-galway/608829C1D312AADC80258D7100602691"
+  ],
+  "started_at": "2026-01-20T11:47:44.205767",
+  "last_saved_at": "2026-01-20T11:48:28.306868",
+  "total_listings_found": 5,
+  "output_file": "test_sold.csv",
+  "county_filter": null
+}

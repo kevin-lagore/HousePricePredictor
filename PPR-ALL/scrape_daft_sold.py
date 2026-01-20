@@ -656,34 +656,51 @@ class DaftSoldScraper:
         """Initialize Playwright browser with stealth settings."""
         self.playwright = sync_playwright().start()
 
-        self.browser = self.playwright.chromium.launch(
+        # Use Firefox - better at avoiding Cloudflare detection than Chromium
+        self.browser = self.playwright.firefox.launch(
             headless=self.headless,
-            args=[
-                "--disable-blink-features=AutomationControlled",
-                "--disable-dev-shm-usage",
-                "--no-sandbox",
-            ]
         )
 
         self.context = self.browser.new_context(
             viewport={"width": 1920, "height": 1080},
             user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) "
+                "Gecko/20100101 Firefox/121.0"
             ),
             locale="en-IE",
             timezone_id="Europe/Dublin",
         )
 
-        # Remove webdriver flag
-        self.context.add_init_script("""
-            Object.defineProperty(navigator, 'webdriver', {
-                get: () => undefined
-            });
-        """)
-
         self.page = self.context.new_page()
         self.page.set_default_timeout(PAGE_LOAD_TIMEOUT_MS)
+
+    def _wait_for_cloudflare(self) -> bool:
+        """Wait for Cloudflare challenge to complete. Returns True if passed."""
+        max_wait = 30  # seconds
+        start = time.time()
+
+        while time.time() - start < max_wait:
+            # Check if we're on a Cloudflare challenge page
+            title = self.page.title().lower()
+            content = self.page.content().lower()
+
+            # Cloudflare challenge indicators
+            cf_indicators = [
+                "just a moment" in title,
+                "checking your browser" in content,
+                "cloudflare" in content and "challenge" in content,
+                "ray id" in content and "cloudflare" in content,
+            ]
+
+            if not any(cf_indicators):
+                # Not on Cloudflare page, we're through
+                return True
+
+            self.logger.debug("Waiting for Cloudflare challenge...")
+            time.sleep(2)
+
+        self.logger.warning("Cloudflare challenge timeout")
+        return False
 
     def _close_browser(self) -> None:
         """Clean up browser resources."""
@@ -755,8 +772,9 @@ class DaftSoldScraper:
                     if href and "/sold/" in href:
                         # Normalize URL
                         full_url = urljoin(BASE_URL, href)
-                        # Filter: must have /sold/ and end with listing ID (digits)
-                        if "/sold/" in full_url and re.search(r'/\d+/?$', full_url):
+                        # Filter: must have /sold/ and end with alphanumeric listing ID
+                        # Daft IDs look like: EB3161BA3910287080258 or 608829C1D312AADC80258
+                        if "/sold/" in full_url and re.search(r'/[A-Z0-9]{10,}/?$', full_url, re.IGNORECASE):
                             urls.append(full_url.rstrip('/'))
                 except:
                     continue
@@ -769,6 +787,7 @@ class DaftSoldScraper:
                     seen.add(url)
                     unique_urls.append(url)
 
+            self.logger.debug(f"Found {len(unique_urls)} listing URLs on page")
             return unique_urls
 
         except PlaywrightTimeout:
@@ -880,8 +899,8 @@ class DaftSoldScraper:
         listing.scraped_at = datetime.now().isoformat()
         listing.url = self.page.url
 
-        # Extract Daft ID from URL
-        url_match = re.search(r'/(\d+)/?$', listing.url)
+        # Extract Daft ID from URL (alphanumeric IDs like EB3161BA3910287080258)
+        url_match = re.search(r'/([A-Z0-9]{10,})/?$', listing.url, re.IGNORECASE)
         if url_match:
             listing.daft_id = url_match.group(1)
 
@@ -1312,6 +1331,9 @@ class DaftSoldScraper:
         try:
             self.page.goto(url, wait_until="domcontentloaded", timeout=LISTING_LOAD_TIMEOUT_MS)
 
+            # Wait for Cloudflare if needed
+            self._wait_for_cloudflare()
+
             # Dismiss any popups
             self._dismiss_cookie_popup()
 
@@ -1382,6 +1404,11 @@ class DaftSoldScraper:
 
             self.logger.info(f"Navigating to: {search_url}")
             self.page.goto(search_url, wait_until="domcontentloaded")
+
+            # Wait for Cloudflare challenge to pass
+            if not self._wait_for_cloudflare():
+                self.logger.error("Failed to pass Cloudflare challenge. Try running with --no-headless and solve manually.")
+                return
 
             # Dismiss cookie popup on first page
             self._dismiss_cookie_popup()

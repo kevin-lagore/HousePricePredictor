@@ -137,32 +137,45 @@ class DaftUrlFinder:
         """Initialize Playwright browser."""
         self.playwright = sync_playwright().start()
 
-        self.browser = self.playwright.chromium.launch(
+        # Use Firefox - better at avoiding detection
+        self.browser = self.playwright.firefox.launch(
             headless=self.headless,
-            args=[
-                "--disable-blink-features=AutomationControlled",
-                "--disable-dev-shm-usage",
-                "--no-sandbox",
-            ]
         )
 
         self.context = self.browser.new_context(
             viewport={"width": 1920, "height": 1080},
             user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) "
+                "Gecko/20100101 Firefox/121.0"
             ),
             locale="en-IE",
             timezone_id="Europe/Dublin",
         )
 
-        # Anti-detection
-        self.context.add_init_script("""
-            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-        """)
-
         self.page = self.context.new_page()
         self.page.set_default_timeout(SEARCH_TIMEOUT_MS)
+
+    def _wait_for_cloudflare(self, max_wait: int = 30) -> bool:
+        """Wait for Cloudflare challenge to complete."""
+        start = time.time()
+
+        while time.time() - start < max_wait:
+            title = self.page.title().lower()
+            content = self.page.content().lower()
+
+            cf_indicators = [
+                "just a moment" in title,
+                "checking your browser" in content,
+                "cloudflare" in content and "challenge" in content,
+            ]
+
+            if not any(cf_indicators):
+                return True
+
+            self.logger.debug("Waiting for Cloudflare...")
+            time.sleep(2)
+
+        return False
 
     def _close_browser(self) -> None:
         """Clean up browser resources."""

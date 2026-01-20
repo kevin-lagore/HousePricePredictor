@@ -8,7 +8,10 @@
       "Bash(del \"\\\\?\\\\c:\\\\Users\\\\kevin\\\\Hobby Projects\\\\House Price Predictor\\\\nul\")",
       "Bash(cmd /c 'del \"\"\\\\\\\\?\\\\c:\\\\Users\\\\kevin\\\\Hobby Projects\\\\House Price Predictor\\\\nul\"\"')",
       "Bash(cmd /c 'cd /d \"\"c:\\\\Users\\\\kevin\\\\Hobby Projects\\\\House Price Predictor\"\" && del /f /q \"\"\\\\\\\\?\\\\%CD%\\\\nul\"\"')",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(playwright install:*)",
+      "Bash(timeout:*)",
+      "Bash(cmd /c type test_brochures.csv)"
     ]
   }
 }
