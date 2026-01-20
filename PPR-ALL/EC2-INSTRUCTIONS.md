@@ -43,7 +43,7 @@ cd ~/House-Price-Predictor/PPR-ALL
 ./run-scraper.sh
 ```
 
-## Step 6: Disconnect and Let It Run
+## Step 5: Disconnect and Let It Run
 
 The scraper runs in tmux, so you can safely close your SSH connection:
 

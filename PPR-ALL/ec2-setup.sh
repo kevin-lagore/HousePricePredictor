@@ -47,12 +47,8 @@ sudo apt-get install -y \
     libcairo2 \
     libatspi2.0-0
 
-# Create project directory
-echo "[4/5] Setting up project..."
-mkdir -p ~/scraper
-cd ~/scraper
-
-# Create virtual environment
+# Set up virtual environment in current directory
+echo "[4/5] Setting up Python virtual environment..."
 python3 -m venv venv
 source venv/bin/activate
 
@@ -64,13 +60,15 @@ pip install playwright
 echo "[5/5] Installing Firefox browser..."
 playwright install firefox
 
+# Create output directory
+mkdir -p output
+
 echo ""
 echo "=========================================="
 echo "Setup complete!"
 echo "=========================================="
 echo ""
 echo "Next steps:"
-echo "  1. Upload scrape_myhome.py to ~/scraper/"
-echo "  2. Run: cd ~/scraper && source venv/bin/activate"
-echo "  3. Start scraping with: ./run-scraper.sh"
+echo "  1. Run: source venv/bin/activate"
+echo "  2. Start scraping with: ./run-scraper.sh"
 echo ""
