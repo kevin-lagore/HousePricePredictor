@@ -11,7 +11,9 @@
       "Bash(dir:*)",
       "Bash(playwright install:*)",
       "Bash(timeout:*)",
-      "Bash(cmd /c type test_brochures.csv)"
+      "Bash(cmd /c type test_brochures.csv)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
