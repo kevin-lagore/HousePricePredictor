@@ -60,8 +60,8 @@ FOR_SALE_URL = "https://www.myhome.ie/residential/ireland/property-for-sale"
 # Scraping settings
 DEFAULT_CHECKPOINT_INTERVAL = 25
 DEFAULT_MONITOR_INTERVAL = 10
-MIN_DELAY_SECONDS = 4.0
-MAX_DELAY_SECONDS = 8.0
+MIN_DELAY_SECONDS = 1.0
+MAX_DELAY_SECONDS = 2.0
 PAGE_LOAD_TIMEOUT_MS = 60000
 
 # CSV fields
