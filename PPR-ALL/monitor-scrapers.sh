@@ -103,9 +103,9 @@ while true; do
     # Check if scrapers are still running
     RUNNING=$(check_processes)
 
-    # Get stats for output files
-    BULK_FILE=$(ls -t "$OUTPUT_DIR"/bulk_*.csv 2>/dev/null | head -1)
-    ADDR_FILE=$(ls -t "$OUTPUT_DIR"/ppr_enriched_*.csv 2>/dev/null | head -1)
+    # Get stats for output files (use fixed filenames)
+    BULK_FILE="$OUTPUT_DIR/bulk_main.csv"
+    ADDR_FILE="$OUTPUT_DIR/ppr_enriched_main.csv"
 
     BULK_ROWS=$(get_rows "$BULK_FILE")
     ADDR_ROWS=$(get_rows "$ADDR_FILE")

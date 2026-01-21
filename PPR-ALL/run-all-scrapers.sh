@@ -106,17 +106,18 @@ echo "Output: $OUTPUT_DIR"
 echo "=========================================="
 
 # Start scrapers in background
+# Use fixed output filenames so --resume works across restarts
 PIDS=()
 
 if [ "$RUN_BULK" = true ]; then
-    BULK_OUTPUT="$OUTPUT_DIR/bulk_${TIMESTAMP}.csv"
+    BULK_OUTPUT="$OUTPUT_DIR/bulk_main.csv"
     run_scraper "bulk" "python scrape_myhome_brochures.py --bulk --out $BULK_OUTPUT --resume" &
     PIDS+=($!)
     echo "Bulk scraper PID: ${PIDS[-1]}"
 fi
 
 if [ "$RUN_ADDRESSES" = true ]; then
-    ADDR_OUTPUT="$OUTPUT_DIR/ppr_enriched_${TIMESTAMP}.csv"
+    ADDR_OUTPUT="$OUTPUT_DIR/ppr_enriched_main.csv"
     run_scraper "addresses" "python scrape_myhome_brochures.py --addresses ppr_addresses.txt --out $ADDR_OUTPUT --resume" &
     PIDS+=($!)
     echo "Addresses scraper PID: ${PIDS[-1]}"
