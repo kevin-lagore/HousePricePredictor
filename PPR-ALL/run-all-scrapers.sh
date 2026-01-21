@@ -11,6 +11,9 @@
 
 set -e
 
+# Discord webhook for notifications
+WEBHOOK_URL="${WEBHOOK_URL:-https://discord.com/api/webhooks/1463501941299744770/GFB8cL68SzT0FyReQ2pmyjNuxtHEpn0jopGWfaiUpQjWnSmsr4qH3dj66lAZDIexRMuC}"
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
@@ -32,7 +35,7 @@ notify() {
 
     if [ -n "$WEBHOOK_URL" ]; then
         curl -s -X POST -H 'Content-type: application/json' \
-            --data "{\"text\":\"[EC2 Scraper] $message\"}" \
+            --data "{\"content\":\"[EC2 Scraper] $message\"}" \
             "$WEBHOOK_URL" > /dev/null 2>&1 || true
     fi
 }
