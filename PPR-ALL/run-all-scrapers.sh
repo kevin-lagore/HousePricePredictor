@@ -93,7 +93,7 @@ esac
 # Check for addresses file if needed
 if [ "$RUN_ADDRESSES" = true ] && [ ! -f "ppr_addresses.txt" ]; then
     echo "Extracting PPR addresses..."
-    python extract_ppr_addresses.py PPR-ALL.csv ppr_addresses.txt --recent 730
+    python extract_ppr_addresses.py PPR-ALL.csv ppr_addresses.txt
 fi
 
 echo "=========================================="
