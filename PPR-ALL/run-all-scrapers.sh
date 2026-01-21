@@ -105,35 +105,25 @@ echo "Logs: $LOG_DIR"
 echo "Output: $OUTPUT_DIR"
 echo "=========================================="
 
-# Start scrapers in background
+# Run scrapers SEQUENTIALLY to avoid memory issues
 # Use fixed output filenames so --resume works across restarts
-PIDS=()
+FAILED=0
 
 if [ "$RUN_BULK" = true ]; then
     BULK_OUTPUT="$OUTPUT_DIR/bulk_main.csv"
-    run_scraper "bulk" "python scrape_myhome_brochures.py --bulk --out $BULK_OUTPUT --resume" &
-    PIDS+=($!)
-    echo "Bulk scraper PID: ${PIDS[-1]}"
+    echo "Running bulk scraper..."
+    if ! run_scraper "bulk" "python scrape_myhome_brochures.py --bulk --out $BULK_OUTPUT --resume"; then
+        FAILED=$((FAILED + 1))
+    fi
 fi
 
 if [ "$RUN_ADDRESSES" = true ]; then
     ADDR_OUTPUT="$OUTPUT_DIR/ppr_enriched_main.csv"
-    run_scraper "addresses" "python scrape_myhome_brochures.py --addresses ppr_addresses.txt --out $ADDR_OUTPUT --resume" &
-    PIDS+=($!)
-    echo "Addresses scraper PID: ${PIDS[-1]}"
-fi
-
-# Wait for all scrapers to finish
-echo ""
-echo "Scrapers running in background. PIDs: ${PIDS[*]}"
-echo "Waiting for completion..."
-
-FAILED=0
-for pid in "${PIDS[@]}"; do
-    if ! wait $pid; then
+    echo "Running address scraper..."
+    if ! run_scraper "addresses" "python scrape_myhome_brochures.py --addresses ppr_addresses.txt --out $ADDR_OUTPUT --resume"; then
         FAILED=$((FAILED + 1))
     fi
-done
+fi
 
 if [ $FAILED -eq 0 ]; then
     notify "All scrapers completed successfully"
