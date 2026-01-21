@@ -27,28 +27,8 @@ sudo apt-get install -y \
     htop \
     unzip
 
-# Install Playwright system dependencies
-echo "[3/5] Installing browser dependencies..."
-sudo apt-get install -y \
-    libnss3 \
-    libnspr4 \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libcups2 \
-    libdrm2 \
-    libxkbcommon0 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxfixes3 \
-    libxrandr2 \
-    libgbm1 \
-    libasound2t64 \
-    libpango-1.0-0 \
-    libcairo2 \
-    libatspi2.0-0
-
 # Set up virtual environment in current directory
-echo "[4/5] Setting up Python virtual environment..."
+echo "[3/5] Setting up Python virtual environment..."
 python3 -m venv venv
 source venv/bin/activate
 
@@ -56,9 +36,12 @@ source venv/bin/activate
 pip install --upgrade pip
 pip install playwright
 
-# Install Firefox browser for Playwright
-echo "[5/5] Installing Firefox browser..."
+# Install Firefox browser and system dependencies
+echo "[4/5] Installing Firefox browser..."
 playwright install firefox
+
+echo "[5/5] Installing browser system dependencies..."
+sudo venv/bin/playwright install-deps
 
 # Create output directory
 mkdir -p output
