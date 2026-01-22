@@ -14,7 +14,14 @@
       "Bash(cmd /c type test_brochures.csv)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(ls -lh \"c:\\\\Users\\\\kevin\\\\Hobby Projects\\\\House Price Predictor\\\\PPR-ALL\"\" | grep -E \"matched)",
+      "Bash(test \")",
+      "Bash(find:*)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(cmd /c \"cd /d \"\"c:\\\\Users\\\\kevin\\\\Hobby Projects\\\\House Price Predictor\"\" && del /f \"\"\\\\?\\\\c:\\\\Users\\\\kevin\\\\Hobby Projects\\\\House Price Predictor\\\\nul\"\" && del /f \"\"\\\\?\\\\c:\\\\Users\\\\kevin\\\\Hobby Projects\\\\House Price Predictor\\\\PPR-ALL\\\\nul\"\"\")",
+      "Bash(findstr:*)"
     ]
   }
 }
